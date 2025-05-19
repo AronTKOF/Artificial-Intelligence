@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🌟 200 Ferramentas de IA</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <header class="gradient-header">
+        <h1>🧠 Catálogo de 200 Ferramentas de IA</h1>
+        <div class="search-container">
+            <input type="text" id="searchInput" placeholder="Buscar por nome...">
+            <select id="categoryFilter">
+                <option value="">Todas Categorias</option>
+                <!-- Categorias serão preenchidas via JS -->
+            </select>
+            <select id="planFilter">
+                <option value="">Todos Planos</option>
+                <option value="Gratuito">Gratuito</option>
+                <option value="Freemium">Freemium</option>
+                <option value="Pago">Pago</option>
+            </select>
+        </div>
+    </header>
+
+    <main>
+        <div id="toolCount"></div>
+        <div id="toolsGrid" class="tools-grid"></div>
+    </main>
+
+    <footer class="gradient-footer">
+        <p>© 2023 Catálogo de IA | Atualizado diariamente</p>
+    </footer>
+
+    <script src="data.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
