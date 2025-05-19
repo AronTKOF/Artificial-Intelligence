@@ -1,6 +1,52 @@
-// Função para renderizar as ferramentas
+// Versão corrigida e melhorada do script.js
+
+// Aguarda o DOM estar totalmente carregado
+document.addEventListener('DOMContentLoaded', () => {
+    // Carrega os dados das ferramentas
+    loadTools();
+    
+    // Configura os event listeners
+    setupEventListeners();
+});
+
+function loadTools() {
+    // Verifica se aiTools já está disponível globalmente
+    if (typeof aiTools !== 'undefined' && aiTools.length > 0) {
+        initializeApp();
+    } else {
+        // Alternativa caso os dados não estejam disponíveis imediatamente
+        setTimeout(() => {
+            if (typeof aiTools !== 'undefined') {
+                initializeApp();
+            } else {
+                console.error('Dados das ferramentas não carregados');
+                document.getElementById('toolsGrid').innerHTML = 
+                    '<p class="error">Erro ao carregar os dados. Recarregue a página.</p>';
+            }
+        }, 500);
+    }
+}
+
+function initializeApp() {
+    populateCategories();
+    renderTools(aiTools);
+    updateToolCount(aiTools.length);
+}
+
+function setupEventListeners() {
+    document.getElementById('searchInput').addEventListener('input', filterTools);
+    document.getElementById('categoryFilter').addEventListener('change', filterTools);
+    document.getElementById('planFilter').addEventListener('change', filterTools);
+}
+
 function renderTools(tools) {
     const toolsGrid = document.getElementById('toolsGrid');
+    
+    if (tools.length === 0) {
+        toolsGrid.innerHTML = '<p class="no-results">Nenhuma ferramenta encontrada com esses critérios.</p>';
+        return;
+    }
+    
     toolsGrid.innerHTML = '';
     
     tools.forEach(tool => {
@@ -9,13 +55,13 @@ function renderTools(tools) {
         
         toolCard.innerHTML = `
             <div class="tool-header">
-                <h3 class="tool-name">${tool.name}</h3>
+                <h3 class="tool-name">${escapeHTML(tool.name)}</h3>
             </div>
             <div class="tool-body">
-                <p class="tool-description">${tool.description}</p>
+                <p class="tool-description">${escapeHTML(tool.description)}</p>
                 <div class="tool-meta">
-                    <span class="tool-category">${tool.category}</span>
-                    <span class="tool-plan ${tool.plan.toLowerCase()}">${tool.plan}</span>
+                    <span class="tool-category">${escapeHTML(tool.category)}</span>
+                    <span class="tool-plan ${tool.plan.toLowerCase()}">${escapeHTML(tool.plan)}</span>
                 </div>
                 <a href="${tool.link}" target="_blank" rel="noopener noreferrer" class="tool-link">
                     Visitar Site →
@@ -25,11 +71,16 @@ function renderTools(tools) {
         
         toolsGrid.appendChild(toolCard);
     });
-    
-    document.getElementById('toolCount').textContent = `Mostrando ${tools.length} de ${aiTools.length} ferramentas`;
 }
 
-// Função para filtrar as ferramentas
+function escapeHTML(str) {
+    return str.replace(/&/g, "&amp;")
+              .replace(/</g, "&lt;")
+              .replace(/>/g, "&gt;")
+              .replace(/"/g, "&quot;")
+              .replace(/'/g, "&#039;");
+}
+
 function filterTools() {
     const searchTerm = document.getElementById('searchInput').value.toLowerCase();
     const category = document.getElementById('categoryFilter').value;
@@ -45,12 +96,17 @@ function filterTools() {
     });
     
     renderTools(filteredTools);
+    updateToolCount(filteredTools.length);
 }
 
-// Preencher categorias no dropdown
 function populateCategories() {
-    const categories = [...new Set(aiTools.map(tool => tool.category))];
+    const categories = [...new Set(aiTools.map(tool => tool.category).sort()];
     const categoryFilter = document.getElementById('categoryFilter');
+    
+    // Limpa opções existentes (mantendo a primeira)
+    while (categoryFilter.options.length > 1) {
+        categoryFilter.remove(1);
+    }
     
     categories.forEach(category => {
         const option = document.createElement('option');
@@ -60,13 +116,7 @@ function populateCategories() {
     });
 }
 
-// Inicialização
-document.addEventListener('DOMContentLoaded', () => {
-    populateCategories();
-    renderTools(aiTools);
-    
-    // Event listeners
-    document.getElementById('searchInput').addEventListener('input', filterTools);
-    document.getElementById('categoryFilter').addEventListener('change', filterTools);
-    document.getElementById('planFilter').addEventListener('change', filterTools);
-});
+function updateToolCount(count) {
+    document.getElementById('toolCount').textContent = 
+        `Mostrando ${count} de ${aiTools.length} ferramentas`;
+}
